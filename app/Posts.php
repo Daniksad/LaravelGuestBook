@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property integer $id
- * @property string $email
+ * @property string $name
  * @property string $content
  * @property integer $status
  * @property string $created_at
  * @property string $updated_at
+ * @property string $email
  */
 class Posts extends Model
 {
@@ -24,6 +25,6 @@ class Posts extends Model
     /**
      * @var array
      */
-    protected $fillable = ['email', 'content', 'status', 'created_at', 'updated_at'];
+    protected $fillable = ['name', 'content', 'status', 'created_at', 'updated_at', 'email'];
 
 }

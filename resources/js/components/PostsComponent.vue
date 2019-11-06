@@ -1,9 +1,15 @@
 <template>
     <div>
-        <table class="table">
+        <table class="table posts_table">
             <tbody>
                 <tr v-for="post in posts">
-                    <td><strong class="d-block text-gray-dark">{{post.email}}</strong><hr>{{post.created_at | moment("dddd, MMMM Do YYYY")}}</td>
+                    <td>
+                        <strong class="d-block text-gray-dark">{{post.name}}</strong>
+                        <hr>
+                        <strong class="d-block text-gray-dark">{{post.email}}</strong>
+                        <hr>
+                        {{post.created_at | moment("dddd, MMMM Do YYYY")}}
+                    </td>
                     <td>{{post.content}}</td>
                 </tr>
             </tbody>
@@ -32,4 +38,8 @@
 
 <style scoped>
 
+    .posts_table {
+        border-collapse: separate;
+        border-spacing: 0 15px;
+    }
 </style>
