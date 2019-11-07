@@ -1891,15 +1891,40 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['posts'],
+  props: ['posts', 'logged'],
   mounted: function mounted() {
-    console.log('Component mounted.');
-    this.update();
+    if (this.logged !== 1) this.index = this.status_published;
+  },
+  data: function data() {
+    return {
+      index: 0,
+      status_new: 0,
+      status_published: 1,
+      status_declined: 2
+    };
   },
   methods: {
-    update: function update() {
-      console.log(this.posts);
+    countByStatus: function countByStatus(status) {
+      return this.posts.filter(function (post) {
+        return post.status === status;
+      }).length;
+    },
+    btnClassByStatus: function btnClassByStatus(status) {
+      return status === this.index ? 'btn btn-dark' : 'btn btn-light';
     }
   }
 });
@@ -37905,34 +37930,103 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _vm.logged === 1
+      ? _c("table", [
+          _c("tr", [
+            _c("td", [
+              _c(
+                "button",
+                {
+                  class: _vm.btnClassByStatus(_vm.status_published),
+                  on: {
+                    click: function($event) {
+                      _vm.index = _vm.status_published
+                    }
+                  }
+                },
+                [
+                  _vm._v(
+                    "Published (" +
+                      _vm._s(_vm.countByStatus(_vm.status_published)) +
+                      ")"
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("td", [
+              _c(
+                "button",
+                {
+                  class: _vm.btnClassByStatus(_vm.status_declined),
+                  on: {
+                    click: function($event) {
+                      _vm.index = _vm.status_declined
+                    }
+                  }
+                },
+                [
+                  _vm._v(
+                    "Declined (" +
+                      _vm._s(_vm.countByStatus(_vm.status_declined)) +
+                      ")"
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("td", [
+              _c(
+                "button",
+                {
+                  class: _vm.btnClassByStatus(_vm.status_new),
+                  on: {
+                    click: function($event) {
+                      _vm.index = _vm.status_new
+                    }
+                  }
+                },
+                [
+                  _vm._v(
+                    "New (" + _vm._s(_vm.countByStatus(_vm.status_new)) + ")"
+                  )
+                ]
+              )
+            ])
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
     _c("table", { staticClass: "table posts_table" }, [
       _c(
         "tbody",
         _vm._l(_vm.posts, function(post) {
-          return _c("tr", [
-            _c("td", [
-              _c("strong", { staticClass: "d-block text-gray-dark" }, [
-                _vm._v(_vm._s(post.name))
-              ]),
-              _vm._v(" "),
-              _c("hr"),
-              _vm._v(" "),
-              _c("strong", { staticClass: "d-block text-gray-dark" }, [
-                _vm._v(_vm._s(post.email))
-              ]),
-              _vm._v(" "),
-              _c("hr"),
-              _vm._v(
-                "\n                    " +
-                  _vm._s(
-                    _vm._f("moment")(post.created_at, "dddd, MMMM Do YYYY")
-                  ) +
-                  "\n                "
-              )
-            ]),
-            _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(post.content))])
-          ])
+          return post.status === _vm.index
+            ? _c("tr", [
+                _c("td", [
+                  _c("strong", { staticClass: "d-block text-gray-dark" }, [
+                    _vm._v(_vm._s(post.name))
+                  ]),
+                  _vm._v(" "),
+                  _c("hr"),
+                  _vm._v(" "),
+                  _c("strong", { staticClass: "d-block text-gray-dark" }, [
+                    _vm._v(_vm._s(post.email))
+                  ]),
+                  _vm._v(" "),
+                  _c("hr"),
+                  _vm._v(
+                    "\n                    " +
+                      _vm._s(
+                        _vm._f("moment")(post.created_at, "dddd, MMMM Do YYYY")
+                      ) +
+                      "\n                "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(post.content))])
+              ])
+            : _vm._e()
         }),
         0
       )
