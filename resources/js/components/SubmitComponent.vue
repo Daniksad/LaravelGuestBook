@@ -1,7 +1,7 @@
 <template>
     <form>
         <button class="btn btn-light" data-toggle="collapse" data-target="#submitCollapse" @click="collapsed = !collapsed">{{!collapsed ? "Write post" : "Collapse"}}</button>
-        <button v-if="collapsed" type="submit" class="btn btn-light">Submit</button>
+        <button v-if="collapsed" type="submit" class="btn btn-light" @click="addPost()">Submit</button>
         <div id="submitCollapse" class="collapse form-group">
             <br>
             <table class="table">
@@ -15,7 +15,7 @@
                 </tr>
                 <tr>
                     <td>Text:</td>
-                    <td><textarea class="form-control" cols="30" rows="10" required v-model="text"></textarea></td>
+                    <td><textarea class="form-control" cols="30" rows="10" required v-model="content"></textarea></td>
                 </tr>
             </table>
         </div>
@@ -30,7 +30,16 @@
                 collapsed: false,
                 name: '',
                 email: '',
-                text: ''
+                content: ''
+            }
+        },
+        methods: {
+            addPost() {
+                this.$store.dispatch('addPost', {
+                    name: this.name,
+                    email: this.email,
+                    content: this.content
+                });
             }
         }
     }

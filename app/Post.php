@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $updated_at
  * @property string $email
  */
-class Posts extends Model
+class Post extends Model
 {
     /**
      * The "type" of the auto-incrementing ID.

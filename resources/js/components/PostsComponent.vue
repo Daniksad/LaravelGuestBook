@@ -16,7 +16,7 @@
         <table class="table" v-for="post in postsPaginated">
             <tbody>
                 <tr>
-                    <td>
+                    <td class="ten">
                         <strong class="d-block text-gray-dark">{{post.name}}</strong>
                         <hr>
                         <strong class="d-block text-gray-dark">{{post.email}}</strong>
@@ -26,7 +26,7 @@
                     <td>{{post.content}}</td>
                 </tr>
                 <tr v-if="logged === 1">
-                    <td></td>
+                    <td class="ten"></td>
                     <td class="text-right">
                         <button data-toggle="collapse" :data-target="'#answerCollapse'+post.id" class="btn btn-dark btn-sm" v-if="post.status === status_published">Answer</button>
                         <button class="btn btn-dark btn-sm" v-if="post.status !== status_published">Publish</button>
@@ -35,7 +35,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
+                    <td class="ten"></td>
                     <td>
                         <form>
                             <div :id="'answerCollapse'+post.id" class="collapse form-group text-right">
@@ -115,8 +115,7 @@
 </script>
 
 <style scoped>
-    .posts_table {
-        border-collapse: separate;
-        border-spacing: 0 15px;
+    .ten {
+        width: 10%
     }
 </style>
