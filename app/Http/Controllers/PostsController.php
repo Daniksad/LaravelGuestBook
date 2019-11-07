@@ -9,6 +9,7 @@ use SebastianBergmann\Environment\Console;
 
 class PostsController extends Controller
 {
+
     /**
     * Show posts.
     *
@@ -16,8 +17,13 @@ class PostsController extends Controller
     */
     public function index()
     {
-        $posts = App\Posts::all();
-        return view('posts', compact('posts'));
+        if (auth()->check())
+            $logged = 1;
+        else
+            $logged = 0;
+
+        $posts = App\Posts::orderByDesc('created_at')->get();
+        return view('posts', ['posts' => $posts, 'logged' =>  $logged]);
     }
 }
 
