@@ -13,10 +13,10 @@
                 </td>
             </tr>
         </table>
-        <table class="table" v-for="post in postsPaginated">
+        <table class="table text-break" v-for="post in postsPaginated">
             <tbody>
                 <tr>
-                    <td class="ten">
+                    <td class="posts_first_column">
                         <strong class="d-block text-gray-dark">{{post.name}}</strong>
                         <hr>
                         <strong class="d-block text-gray-dark">{{post.email}}</strong>
@@ -25,23 +25,30 @@
                     </td>
                     <td>{{post.content}}</td>
                 </tr>
-                <tr v-if="logged === 1">
-                    <td class="ten"></td>
+                <tr>
+                    <td class="posts_first_column text-center">
+                    </td>
                     <td class="text-right">
-                        <button data-toggle="collapse" :data-target="'#answerCollapse'+post.id" class="btn btn-dark btn-sm" v-if="post.status === status_published">Answer</button>
-                        <button class="btn btn-dark btn-sm" v-if="post.status !== status_published">Publish</button>
-                        <button class="btn btn-dark btn-sm" v-if="post.status !== status_declined">Decline</button>
-                        <button class="btn btn-dark btn-sm" v-if="post.status !== status_new">Mark as New</button>
+                        <button data-toggle="collapse" :data-target="'#answerCollapse'+post.id" class="btn btn-dark btn-sm" v-if="findAnswer(post.id)">Read answer</button>
+                        <button class="btn btn-dark btn-sm" v-if="findAnswer(post.id) && (logged === 1)" @click="deletePost(findAnswer(post.id).id)">Delete answer</button>
+                        <button data-toggle="collapse" :data-target="'#answerCollapse'+post.id" class="btn btn-dark btn-sm" v-if="!findAnswer(post.id) && (logged === 1)">Answer</button>
+                        <button class="btn btn-dark btn-sm" v-if="(post.status !== status_published) && (logged === 1)" @click="changeStatus(post.id, status_published)">Publish</button>
+                        <button class="btn btn-dark btn-sm" v-if="(post.status !== status_declined) && (logged === 1)" @click="changeStatus(post.id, status_declined)">Decline</button>
+                        <button class="btn btn-dark btn-sm" v-if="(post.status !== status_new) && (logged === 1)" @click="changeStatus(post.id, status_new)">Mark as New</button>
+                        <button class="btn btn-dark btn-sm" v-if="logged === 1" @click="deletePost(post.id)">Delete</button>
                     </td>
                 </tr>
                 <tr>
-                    <td class="ten"></td>
+                    <td class="posts_first_column"></td>
                     <td>
                         <form>
                             <div :id="'answerCollapse'+post.id" class="collapse form-group text-right">
-                                <textarea class="form-control" cols="30" rows="10"></textarea>
-                                <br>
-                                <button type="submit" class="btn btn-dark btn-sm">Submit</button>
+                                <form v-if="(logged === 1) && !findAnswer(post.id)">
+                                    <textarea class="form-control" cols="30" rows="10" :id="'answer'+post.id" v-model="answers[post.id]"></textarea>
+                                    <br>
+                                    <button type="submit" class="btn btn-dark btn-sm" @click="addAnswer(post.id)">Submit</button>
+                                </form>
+                                {{findAnswer(post.id) ? findAnswer(post.id).name + ": " + findAnswer(post.id).content : ""}}
                             </div>
                         </form>
                     </td>
@@ -64,29 +71,62 @@
     export default {
         props: [
             'posts',
-            'logged'
+            'logged',
+            'user'
         ],
         mounted() {
           if (this.logged !== 1) this.index = this.status_published;
         },
         data() {
             return {
+                postsComponentKey: 0,
                 index: 1,
                 status_new: 0,
                 status_published: 1,
                 status_declined: 2,
                 perPage: 3,
+                answers: [],
                 pagination: {}
             }
         },
         computed: {
             postsPaginated() {
-                return this.paginate(this.posts.filter((post) => post.status === this.index));
+                return this.paginate(this.filterPosts(this.posts, this.index));
             }
         },
         methods: {
+            changeStatus(id, status) {
+                this.$store.dispatch('changeStatus', {
+                    id: id,
+                    status: status
+                });
+                this.posts.find(p => p.id === id).status = status;
+                this.setPage(this.pagination.currentPage);
+            },
+            addAnswer(parent_id) {
+                this.$store.dispatch('addPost', {
+                    parent_id: parent_id,
+                    name: this.user[0].name,
+                    email: this.user[0].email,
+                    content: this.answers[parent_id],
+                    status: 1
+                });
+            },
+            deletePost(id) {
+                this.$store.dispatch('deletePost', {
+                    id: id
+                });
+                this.posts.splice(this.posts.indexOf(this.posts.find(p => p.id === id)), 1);
+                this.setPage(this.pagination.currentPage);
+            },
+            findAnswer(id) {
+                return this.posts.find(p => p.parent_id === id)
+            },
+            filterPosts(posts, status) {
+                return posts.filter((post) => post.status === status && post.parent_id === 0)
+            },
             setPage(p) {
-                this.pagination = this.paginator(this.posts.filter((post) => post.status === this.index).length, p);
+                this.pagination = this.paginator(this.filterPosts(this.posts, this.index).length, p);
             },
             paginate(data) {
                 return _.slice(data, this.pagination.startIndex, this.pagination.endIndex + 1)
@@ -102,7 +142,7 @@
                 };
             },
             countByStatus(status) {
-                return this.posts.filter((post) => post.status === status).length
+                return this.filterPosts(this.posts, status).length
             },
             btnClassByStatus(status) {
                 return status === this.index ? 'btn btn-dark' : 'btn btn-light'
@@ -115,7 +155,7 @@
 </script>
 
 <style scoped>
-    .ten {
-        width: 10%
+    .posts_first_column {
+        width: 200px;
     }
 </style>

@@ -32,6 +32,12 @@ const store = new Vuex.Store({
             axios.post('/post/add', {data});
             axios.get('/');
         },
+        changeStatus(context, data) {
+            axios.post('/post/changeStatus', {data});
+        },
+        deletePost(context, data) {
+            axios.post('/post/delete', {data});
+        }
     },
     mutations: {
 
