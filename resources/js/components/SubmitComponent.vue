@@ -36,9 +36,11 @@
         methods: {
             addPost() {
                 this.$store.dispatch('addPost', {
+                    parent_id: 0,
                     name: this.name,
                     email: this.email,
-                    content: this.content
+                    content: this.content,
+                    status: 0
                 });
             }
         }
