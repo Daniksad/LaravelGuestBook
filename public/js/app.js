@@ -1932,37 +1932,76 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['posts', 'logged'],
+  props: ['posts', 'logged', 'user'],
   mounted: function mounted() {
     if (this.logged !== 1) this.index = this.status_published;
   },
   data: function data() {
     return {
+      postsComponentKey: 0,
       index: 1,
       status_new: 0,
       status_published: 1,
       status_declined: 2,
       perPage: 3,
+      answers: [],
       pagination: {}
     };
   },
   computed: {
     postsPaginated: function postsPaginated() {
-      var _this = this;
-
-      return this.paginate(this.posts.filter(function (post) {
-        return post.status === _this.index;
-      }));
+      return this.paginate(this.filterPosts(this.posts, this.index));
     }
   },
   methods: {
+    changeStatus: function changeStatus(id, status) {
+      this.$store.dispatch('changeStatus', {
+        id: id,
+        status: status
+      });
+      this.posts.find(function (p) {
+        return p.id === id;
+      }).status = status;
+      this.setPage(this.pagination.currentPage);
+    },
+    addAnswer: function addAnswer(parent_id) {
+      this.$store.dispatch('addPost', {
+        parent_id: parent_id,
+        name: this.user[0].name,
+        email: this.user[0].email,
+        content: this.answers[parent_id],
+        status: 1
+      });
+    },
+    deletePost: function deletePost(id) {
+      this.$store.dispatch('deletePost', {
+        id: id
+      });
+      this.posts.splice(this.posts.indexOf(this.posts.find(function (p) {
+        return p.id === id;
+      })), 1);
+      this.setPage(this.pagination.currentPage);
+    },
+    findAnswer: function findAnswer(id) {
+      return this.posts.find(function (p) {
+        return p.parent_id === id;
+      });
+    },
+    filterPosts: function filterPosts(posts, status) {
+      return posts.filter(function (post) {
+        return post.status === status && post.parent_id === 0;
+      });
+    },
     setPage: function setPage(p) {
-      var _this2 = this;
-
-      this.pagination = this.paginator(this.posts.filter(function (post) {
-        return post.status === _this2.index;
-      }).length, p);
+      this.pagination = this.paginator(this.filterPosts(this.posts, this.index).length, p);
     },
     paginate: function paginate(data) {
       return _.slice(data, this.pagination.startIndex, this.pagination.endIndex + 1);
@@ -1978,9 +2017,7 @@ __webpack_require__.r(__webpack_exports__);
       };
     },
     countByStatus: function countByStatus(status) {
-      return this.posts.filter(function (post) {
-        return post.status === status;
-      }).length;
+      return this.filterPosts(this.posts, status).length;
     },
     btnClassByStatus: function btnClassByStatus(status) {
       return status === this.index ? 'btn btn-dark' : 'btn btn-light';
@@ -2039,9 +2076,11 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     addPost: function addPost() {
       this.$store.dispatch('addPost', {
+        parent_id: 0,
         name: this.name,
         email: this.email,
-        content: this.content
+        content: this.content,
+        status: 0
       });
     }
   }
@@ -6506,7 +6545,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.ten[data-v-38048495] {\n    width: 10%\n}\n", ""]);
+exports.push([module.i, "\n.posts_first_column[data-v-38048495] {\n    width: 200px;\n}\n", ""]);
 
 // exports
 
@@ -38121,10 +38160,10 @@ var render = function() {
         : _vm._e(),
       _vm._v(" "),
       _vm._l(_vm.postsPaginated, function(post) {
-        return _c("table", { staticClass: "table" }, [
+        return _c("table", { staticClass: "table text-break" }, [
           _c("tbody", [
             _c("tr", [
-              _c("td", { staticClass: "ten" }, [
+              _c("td", { staticClass: "posts_first_column" }, [
                 _c("strong", { staticClass: "d-block text-gray-dark" }, [
                   _vm._v(_vm._s(post.name))
                 ]),
@@ -38148,48 +38187,123 @@ var render = function() {
               _c("td", [_vm._v(_vm._s(post.content))])
             ]),
             _vm._v(" "),
-            _vm.logged === 1
-              ? _c("tr", [
-                  _c("td", { staticClass: "ten" }),
-                  _vm._v(" "),
-                  _c("td", { staticClass: "text-right" }, [
-                    post.status === _vm.status_published
-                      ? _c(
-                          "button",
-                          {
-                            staticClass: "btn btn-dark btn-sm",
-                            attrs: {
-                              "data-toggle": "collapse",
-                              "data-target": "#answerCollapse" + post.id
-                            }
-                          },
-                          [_vm._v("Answer")]
-                        )
-                      : _vm._e(),
-                    _vm._v(" "),
-                    post.status !== _vm.status_published
-                      ? _c("button", { staticClass: "btn btn-dark btn-sm" }, [
-                          _vm._v("Publish")
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    post.status !== _vm.status_declined
-                      ? _c("button", { staticClass: "btn btn-dark btn-sm" }, [
-                          _vm._v("Decline")
-                        ])
-                      : _vm._e(),
-                    _vm._v(" "),
-                    post.status !== _vm.status_new
-                      ? _c("button", { staticClass: "btn btn-dark btn-sm" }, [
-                          _vm._v("Mark as New")
-                        ])
-                      : _vm._e()
-                  ])
-                ])
-              : _vm._e(),
+            _c("tr", [
+              _c("td", { staticClass: "posts_first_column text-center" }),
+              _vm._v(" "),
+              _c("td", { staticClass: "text-right" }, [
+                _vm.findAnswer(post.id)
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        attrs: {
+                          "data-toggle": "collapse",
+                          "data-target": "#answerCollapse" + post.id
+                        }
+                      },
+                      [_vm._v("Read answer")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.findAnswer(post.id) && _vm.logged === 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        on: {
+                          click: function($event) {
+                            _vm.deletePost(_vm.findAnswer(post.id).id)
+                          }
+                        }
+                      },
+                      [_vm._v("Delete answer")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                !_vm.findAnswer(post.id) && _vm.logged === 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        attrs: {
+                          "data-toggle": "collapse",
+                          "data-target": "#answerCollapse" + post.id
+                        }
+                      },
+                      [_vm._v("Answer")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                post.status !== _vm.status_published && _vm.logged === 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        on: {
+                          click: function($event) {
+                            return _vm.changeStatus(
+                              post.id,
+                              _vm.status_published
+                            )
+                          }
+                        }
+                      },
+                      [_vm._v("Publish")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                post.status !== _vm.status_declined && _vm.logged === 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        on: {
+                          click: function($event) {
+                            return _vm.changeStatus(
+                              post.id,
+                              _vm.status_declined
+                            )
+                          }
+                        }
+                      },
+                      [_vm._v("Decline")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                post.status !== _vm.status_new && _vm.logged === 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        on: {
+                          click: function($event) {
+                            return _vm.changeStatus(post.id, _vm.status_new)
+                          }
+                        }
+                      },
+                      [_vm._v("Mark as New")]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.logged === 1
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-dark btn-sm",
+                        on: {
+                          click: function($event) {
+                            return _vm.deletePost(post.id)
+                          }
+                        }
+                      },
+                      [_vm._v("Delete")]
+                    )
+                  : _vm._e()
+              ])
+            ]),
             _vm._v(" "),
             _c("tr", [
-              _c("td", { staticClass: "ten" }),
+              _c("td", { staticClass: "posts_first_column" }),
               _vm._v(" "),
               _c("td", [
                 _c("form", [
@@ -38200,20 +38314,65 @@ var render = function() {
                       attrs: { id: "answerCollapse" + post.id }
                     },
                     [
-                      _c("textarea", {
-                        staticClass: "form-control",
-                        attrs: { cols: "30", rows: "10" }
-                      }),
-                      _vm._v(" "),
-                      _c("br"),
-                      _vm._v(" "),
-                      _c(
-                        "button",
-                        {
-                          staticClass: "btn btn-dark btn-sm",
-                          attrs: { type: "submit" }
-                        },
-                        [_vm._v("Submit")]
+                      _vm.logged === 1 && !_vm.findAnswer(post.id)
+                        ? _c("form", [
+                            _c("textarea", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.answers[post.id],
+                                  expression: "answers[post.id]"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                cols: "30",
+                                rows: "10",
+                                id: "answer" + post.id
+                              },
+                              domProps: { value: _vm.answers[post.id] },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.answers,
+                                    post.id,
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("br"),
+                            _vm._v(" "),
+                            _c(
+                              "button",
+                              {
+                                staticClass: "btn btn-dark btn-sm",
+                                attrs: { type: "submit" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.addAnswer(post.id)
+                                  }
+                                }
+                              },
+                              [_vm._v("Submit")]
+                            )
+                          ])
+                        : _vm._e(),
+                      _vm._v(
+                        "\n                            " +
+                          _vm._s(
+                            _vm.findAnswer(post.id)
+                              ? _vm.findAnswer(post.id).name +
+                                  ": " +
+                                  _vm.findAnswer(post.id).content
+                              : ""
+                          ) +
+                          "\n                        "
                       )
                     ]
                   )
@@ -56328,6 +56487,16 @@ var store = new Vuex.Store({
         data: data
       });
       axios.get('/');
+    },
+    changeStatus: function changeStatus(context, data) {
+      axios.post('/post/changeStatus', {
+        data: data
+      });
+    },
+    deletePost: function deletePost(context, data) {
+      axios.post('/post/delete', {
+        data: data
+      });
     }
   },
   mutations: {}
