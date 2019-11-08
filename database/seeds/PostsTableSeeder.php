@@ -14,6 +14,7 @@ class PostsTableSeeder extends Seeder
         DB::table('posts')->insert(
           array(
               [
+                  'parent_id' => 0,
                   'name' => 'temacoup',
                   'email' => "temacoup@email.com",
                   'content' => "Ну вот я решил наконец то обновиться со своего 7+ спустя три года использования.
@@ -26,6 +27,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.05.01"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'Slava95',
                   'email' => "Slava95@lol.lo",
                   'content' => "Телефон заслуживает своих денег. Качество фото и видео отличное. Батарею держит долго.
@@ -36,6 +38,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2018.12.31"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'РанисSh',
                   'email' => "rara5@italy.it",
                   'content' => "Купил телефон на старте продаж. При первом запуске нагрелся \"до красна\" - думал все,
@@ -48,6 +51,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.03.07"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'astashov',
                   'email' => "astashov@gmail.com",
                   'content' => "Как показывают обзоры, стекло царапается. Так что сразу наклеил стекло. Так же бампер,
@@ -58,6 +62,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.10.01"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'Пришелец-XM1554',
                   'email' => "alien@planet.sp",
                   'content' => "Аппарат - бомба!Батарея - я сама не верила, но она прям держит! Фотографии делает 
@@ -66,6 +71,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.08.27"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'Sefirut',
                   'email' => "sefirut@koko.ko",
                   'content' => "Долго думал взять XR или 11, очень доволен что выбрал 11 так как камера реально огонь и
@@ -77,6 +83,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.06.04"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'Видеонаблюдение',
                   'email' => "watchhhh@light.po",
                   'content' => "Был у меня 7 черный оникс, отличный аппарат, но стало не хватать размера экрана и
@@ -91,17 +98,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.07.03"
               ],
               [
-                  'name' => 'Sefirut',
-                  'email' => "sefirut@koko.ko",
-                  'content' => "Долго думал взять XR или 11, очень доволен что выбрал 11 так как камера реально огонь и
-                  стоит своих денег даже для домашнего пользования фоткать семью, батарея в двойне обрадовала, кстати
-                  экран по сравнению с 6S гораздо лучше и ярче, про скорость работы молчу так как это самое свежее яблоко.
-                  P.S. Олеофобное покрытие хуже чем на защитном стекле китайском за 250 руб., и в магазинах при покупке
-                  стекла будьте внимательней не купите стекло 5.8 дюйма, нужно 6.1 дюйма многие продавцы путают их...",
-                  'status' => 1,
-                  'created_at' => "2019.10.15"
-              ],
-              [
+                  'parent_id' => 0,
                   'name' => 'AlecsT92',
                   'email' => "stack@kucha.com",
                   'content' => "Хорошее современное железо, как всегда первый на бумаге и действие, очень шустро все
@@ -113,6 +110,7 @@ class PostsTableSeeder extends Seeder
                   'created_at' => "2019.04.11"
               ],
               [
+                  'parent_id' => 0,
                   'name' => 'Ivan',
                   'email' => "ivan@ivanov.iv",
                   'content' => "По поводу Face ID, относился к этому с недоверием, на деле оказалось очень классно!
