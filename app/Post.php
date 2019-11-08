@@ -25,6 +25,6 @@ class Post extends Model
     /**
      * @var array
      */
-    protected $fillable = ['name', 'content', 'status', 'created_at', 'updated_at', 'email'];
+    protected $fillable = ['parent_id', 'name', 'content', 'status', 'created_at', 'updated_at', 'email'];
 
 }
