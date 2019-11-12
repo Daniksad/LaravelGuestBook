@@ -29,14 +29,13 @@ Vue.component('submit-component', require('./components/SubmitComponent.vue').de
 const store = new Vuex.Store({
     actions: {
         addPost(context, data) {
-            axios.post('/post/add', {data});
-            axios.get('/');
+            axios.post('/api/posts', data);
         },
         changeStatus(context, data) {
-            axios.post('/post/changeStatus', {data});
+            // axios.put('/post/changeStatus', {data});
         },
         deletePost(context, data) {
-            axios.post('/post/delete', {data});
+            // axios.post('/post/delete', {data});
         }
     },
     mutations: {

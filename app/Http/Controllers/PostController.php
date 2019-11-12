@@ -2,69 +2,77 @@
 
 namespace App\Http\Controllers;
 
-use App;
-use App\Post;
-use App\User;
-use Auth;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
+use App\Post;
+use App\Http\Requests\PostRequest;
 
 class PostController extends Controller
 {
-
     /**
-    * Show posts.
-    *
-    * @return View
-    */
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        auth()->check() ? $logged = 1 : $logged = 0;
-
-        if (auth()->check()) {
-            $user = User::where('id', Auth::user()->id)->get();
-            $posts = Post::orderByDesc('created_at')->get();
-        }
-        else {
-            $user = json_encode(['name' => 'Anonymous', 'email' => 'none']);
-            $posts = Post::where('status', 1)->orderByDesc('created_at')->get();
-        }
-
-        return view('posts', ['posts' => $posts, 'logged' => $logged, 'user' => $user]);
+        return Post::all();
     }
 
-    public function add(Request $request) {
-        $data = $request->get('data');
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(PostRequest $request)
+    {
+        $post = new Post();
+        $post->parent_id = $request['parent_id'];
+        $post->name = $request['name'];
+        $post->email = $request['email'];
+        $post->content = $request['content'];
+        $post->status = $request['status'];
+        $post->save();
 
-        return Post::create([
-            'parent_id' => $data['parent_id'],
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'content' => $data['content'],
-            'status' => $data['status']
-        ]);
+        return $post;
     }
 
-    public function changeStatus(Request $request) {
-        if (auth()->check()) {
-            $data = $request->get('data');
-
-            return Post::where('id', $data['id'])
-                ->update(['status' => $data['status']]);
-        }
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Post  $post
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Post $post)
+    {
+        return $post = Post::findOrFail($post);
     }
 
-    public function delete(Request $request) {
-        if (auth()->check()) {
-            $data = $request->get('data');
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Post  $post
+     * @return \Illuminate\Http\Response
+     */
+    public function update(PostRequest $request, Post $post)
+    {
+        $post = Post::findOrFail($post);
+        $post->fill($request->except(['id']));
+        $post->save();
+        return response()->json($post);
+    }
 
-            Post::where('parent_id', $data['id'])
-                ->delete();
-
-            return Post::where('id', $data['id'])
-                ->delete();
-        }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param \App\Post $post
+     * @return \Illuminate\Http\Response
+     * @throws \Exception
+     */
+    public function destroy(Post $post)
+    {
+        $post = Post::findOrFail($post);
+        if($post->delete()) return response(null, 204);
     }
 }
-

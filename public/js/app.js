@@ -56483,20 +56483,11 @@ Vue.component('submit-component', __webpack_require__(/*! ./components/SubmitCom
 var store = new Vuex.Store({
   actions: {
     addPost: function addPost(context, data) {
-      axios.post('/post/add', {
-        data: data
-      });
-      axios.get('/');
+      axios.post('/api/posts', data);
     },
-    changeStatus: function changeStatus(context, data) {
-      axios.post('/post/changeStatus', {
-        data: data
-      });
+    changeStatus: function changeStatus(context, data) {// axios.put('/post/changeStatus', {data});
     },
-    deletePost: function deletePost(context, data) {
-      axios.post('/post/delete', {
-        data: data
-      });
+    deletePost: function deletePost(context, data) {// axios.post('/post/delete', {data});
     }
   },
   mutations: {}
