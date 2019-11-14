@@ -26,15 +26,12 @@ class PostRequest extends FormRequest
     public function rules(Request $request)
     {
         $rules = [
-            /*
+            'parent_id' => 'required',
             'name' => 'required|string:posts,name',
             'email' => 'required|string:posts,email',
-            'content' => 'required|text:posts,content',
+            'content' => 'required|string:posts,content',
             'status' => 'required|integer|min:0|max:2'
-            */
         ];
-
-        return  $rules;
 
         switch ($this->getMethod())
         {

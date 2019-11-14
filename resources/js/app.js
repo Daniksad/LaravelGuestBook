@@ -35,7 +35,7 @@ const store = new Vuex.Store({
             // axios.put('/post/changeStatus', {data});
         },
         deletePost(context, data) {
-            // axios.post('/post/delete', {data});
+            axios.delete('/api/posts/' + data.id);
         }
     },
     mutations: {

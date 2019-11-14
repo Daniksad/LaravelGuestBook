@@ -26,14 +26,7 @@ class PostController extends Controller
      */
     public function store(PostRequest $request)
     {
-        $post = new Post();
-        $post->parent_id = $request['parent_id'];
-        $post->name = $request['name'];
-        $post->email = $request['email'];
-        $post->content = $request['content'];
-        $post->status = $request['status'];
-        $post->save();
-
+        $post = Post::create($request->validated());
         return $post;
     }
 
@@ -55,9 +48,9 @@ class PostController extends Controller
      * @param  \App\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(PostRequest $request, Post $post)
+    public function update(PostRequest $request, $id)
     {
-        $post = Post::findOrFail($post);
+        $post = Post::findOrFail($id);
         $post->fill($request->except(['id']));
         $post->save();
         return response()->json($post);
@@ -70,9 +63,9 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */
-    public function destroy(Post $post)
+    public function destroy(PostRequest $request, $id)
     {
-        $post = Post::findOrFail($post);
+        $post = Post::findOrFail($id);
         if($post->delete()) return response(null, 204);
     }
 }

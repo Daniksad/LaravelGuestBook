@@ -113,9 +113,7 @@
                 });
             },
             deletePost(id) {
-                this.$store.dispatch('deletePost', {
-                    id: id
-                });
+                this.$store.dispatch('deletePost', this.posts.find(p => p.id === id));
                 this.posts.splice(this.posts.indexOf(this.posts.find(p => p.id === id)), 1);
                 this.setPage(this.pagination.currentPage);
             },

@@ -1982,9 +1982,9 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     deletePost: function deletePost(id) {
-      this.$store.dispatch('deletePost', {
-        id: id
-      });
+      this.$store.dispatch('deletePost', this.posts.find(function (p) {
+        return p.id === id;
+      }));
       this.posts.splice(this.posts.indexOf(this.posts.find(function (p) {
         return p.id === id;
       })), 1);
@@ -56487,7 +56487,8 @@ var store = new Vuex.Store({
     },
     changeStatus: function changeStatus(context, data) {// axios.put('/post/changeStatus', {data});
     },
-    deletePost: function deletePost(context, data) {// axios.post('/post/delete', {data});
+    deletePost: function deletePost(context, data) {
+      axios["delete"]('/api/posts/' + data.id);
     }
   },
   mutations: {}
