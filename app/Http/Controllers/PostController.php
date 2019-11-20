@@ -63,7 +63,7 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      * @throws \Exception
      */
-    public function destroy(PostRequest $request, $id)
+    public function destroy($id)
     {
         $post = Post::findOrFail($id);
         if($post->delete()) return response(null, 204);

@@ -1940,12 +1940,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['posts', 'logged', 'user'],
+  props: ['logged', 'user'],
   mounted: function mounted() {
-    if (this.logged !== 1) this.index = this.status_published;
+    this.$store.dispatch('getAllPosts').then(this.fillPosts());
   },
   data: function data() {
     return {
+      posts: [],
       postsComponentKey: 0,
       index: 1,
       status_new: 0,
@@ -1958,27 +1959,31 @@ __webpack_require__.r(__webpack_exports__);
   },
   computed: {
     postsPaginated: function postsPaginated() {
+      this.setPage(this.pagination.currentPage);
       return this.paginate(this.filterPosts(this.posts, this.index));
     }
   },
   methods: {
+    fillPosts: function fillPosts() {
+      this.posts = this.$store.getters.posts;
+      this.setPage(1);
+    },
     changeStatus: function changeStatus(id, status) {
-      this.$store.dispatch('changeStatus', {
-        id: id,
-        status: status
-      });
       this.posts.find(function (p) {
         return p.id === id;
       }).status = status;
+      this.$store.dispatch('changeStatus', this.posts.find(function (p) {
+        return p.id === id;
+      }));
       this.setPage(this.pagination.currentPage);
     },
     addAnswer: function addAnswer(parent_id) {
       this.$store.dispatch('addPost', {
         parent_id: parent_id,
-        name: this.user[0].name,
-        email: this.user[0].email,
+        name: this.user.name,
+        email: this.user.email,
         content: this.answers[parent_id],
-        status: 1
+        status: this.status_published
       });
     },
     deletePost: function deletePost(id) {
@@ -2023,9 +2028,7 @@ __webpack_require__.r(__webpack_exports__);
       return status === this.index ? 'btn btn-dark' : 'btn btn-light';
     }
   },
-  created: function created() {
-    this.setPage(1);
-  }
+  created: function created() {}
 });
 
 /***/ }),
@@ -56481,17 +56484,59 @@ Vue.component('example-component', __webpack_require__(/*! ./components/ExampleC
 Vue.component('posts-component', __webpack_require__(/*! ./components/PostsComponent.vue */ "./resources/js/components/PostsComponent.vue")["default"]);
 Vue.component('submit-component', __webpack_require__(/*! ./components/SubmitComponent.vue */ "./resources/js/components/SubmitComponent.vue")["default"]);
 var store = new Vuex.Store({
+  state: {
+    posts: []
+  },
+  getters: {
+    posts: function posts(state) {
+      return state.posts;
+    }
+  },
+  mutations: {
+    setPosts: function setPosts(state, posts) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = posts[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var post = _step.value;
+          state.posts.push(post);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  },
   actions: {
+    getAllPosts: function getAllPosts() {
+      var _this = this;
+
+      axios.get('/api/posts').then(function (response) {
+        return _this.commit('setPosts', response.data);
+      });
+    },
     addPost: function addPost(context, data) {
       axios.post('/api/posts', data);
     },
-    changeStatus: function changeStatus(context, data) {// axios.put('/post/changeStatus', {data});
+    changeStatus: function changeStatus(context, data) {
+      axios.put('/api/posts/' + data.id, data);
     },
     deletePost: function deletePost(context, data) {
       axios["delete"]('/api/posts/' + data.id);
     }
-  },
-  mutations: {}
+  }
 });
 /**
  * Next, we will create a fresh Vue application instance and attach it to

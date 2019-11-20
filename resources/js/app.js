@@ -27,19 +27,33 @@ Vue.component('posts-component', require('./components/PostsComponent.vue').defa
 Vue.component('submit-component', require('./components/SubmitComponent.vue').default);
 
 const store = new Vuex.Store({
+    state: {
+        posts: []
+    },
+    getters: {
+        posts: state => {
+            return state.posts;
+        }
+    },
+    mutations: {
+        setPosts: (state, posts) => {
+            for (let post of posts)
+                state.posts.push(post);
+        }
+    },
     actions: {
+        getAllPosts(){
+            axios.get('/api/posts').then(response => this.commit('setPosts', response.data));
+        },
         addPost(context, data) {
             axios.post('/api/posts', data);
         },
         changeStatus(context, data) {
-            // axios.put('/post/changeStatus', {data});
+            axios.put('/api/posts/' + data.id, data);
         },
         deletePost(context, data) {
             axios.delete('/api/posts/' + data.id);
         }
-    },
-    mutations: {
-
     }
 });
 

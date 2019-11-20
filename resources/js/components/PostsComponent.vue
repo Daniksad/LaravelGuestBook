@@ -70,15 +70,15 @@
 
     export default {
         props: [
-            'posts',
             'logged',
             'user'
         ],
         mounted() {
-          if (this.logged !== 1) this.index = this.status_published;
+            this.$store.dispatch('getAllPosts').then(this.fillPosts());
         },
         data() {
             return {
+                posts: [],
                 postsComponentKey: 0,
                 index: 1,
                 status_new: 0,
@@ -91,25 +91,27 @@
         },
         computed: {
             postsPaginated() {
+                this.setPage(this.pagination.currentPage);
                 return this.paginate(this.filterPosts(this.posts, this.index));
             }
         },
         methods: {
+            fillPosts() {
+                this.posts = this.$store.getters.posts;
+                this.setPage(1);
+            },
             changeStatus(id, status) {
-                this.$store.dispatch('changeStatus', {
-                    id: id,
-                    status: status
-                });
                 this.posts.find(p => p.id === id).status = status;
+                this.$store.dispatch('changeStatus', this.posts.find(p => p.id === id));
                 this.setPage(this.pagination.currentPage);
             },
             addAnswer(parent_id) {
                 this.$store.dispatch('addPost', {
                     parent_id: parent_id,
-                    name: this.user[0].name,
-                    email: this.user[0].email,
+                    name: this.user.name,
+                    email: this.user.email,
                     content: this.answers[parent_id],
-                    status: 1
+                    status: this.status_published
                 });
             },
             deletePost(id) {
@@ -147,7 +149,7 @@
             }
         },
         created() {
-            this.setPage(1);
+
         }
     }
 </script>
